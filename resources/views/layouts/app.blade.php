@@ -9,9 +9,6 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -76,5 +73,78 @@
             @yield('content')
         </main>
     </div>
+    
+    <!-- Scripts -->
+    <!-- Firebase Cloud Messaging Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/firebase-messaging-sw.js').then(function(registration) {
+                // Registration was successful
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                // registration failed :(
+                console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+    
+    <!-- Main script -->
+    <script src="{{ asset('js/app.js') }}"></script>
+
+    <script>
+        // Retrieve Firebase Messaging object.
+        const messaging = firebase.messaging();
+
+        // Get Instance ID token. Initially this makes a network call, once retrieved
+        // subsequent calls to getToken will return from cache.
+        messaging.getToken({
+            vapidKey: "BJZB6-vDOZPPdH4WzGDJnZRNRF78077nis1odkxvMj-tfMCem39qImTjICCOJnAMyuXkDcs3ZAKAybJ6wSdLdIo",
+        }).then((currentToken) => {
+            console.log(currentToken);
+            if (currentToken) {
+                sendTokenToServer(currentToken);
+                // updateUIForPushEnabled(currentToken);
+            } else {
+                // Show permission request.
+                console.log('No Instance ID token available. Request permission to generate one.');
+                // Show permission UI.
+                // updateUIForPushPermissionRequired();
+                // setTokenSentToServer(false);
+            }
+        }).catch((err) => {
+            //     console.log('An error occurred while retrieving token. ', err);
+            //     showToken('Error retrieving Instance ID token. ', err);
+            //     setTokenSentToServer(false);
+        });
+
+
+        /**
+         * Functions
+         */
+        // If called, send currently logged in
+        // user id with token to server to be stored.
+        function sendTokenToServer(token) {
+            console.log(token);
+            // Axios.post('/api/fcm/store', {
+            //     userId: 1,
+            //     fcmToken: token,
+            // }).then(function (response) {
+            //     console.log(response);
+            // }).catch(function (error) {
+            //     console.log(error);
+            // })
+        }
+
+        // Handle incoming messages. Called when:
+        // - a message is received while the app has focus
+        // - the user clicks on an app notification created by a service worker
+        //   `messaging.setBackgroundMessageHandler` handler.
+        messaging.onMessage((payload) => {
+            console.log('Message received. ', payload);
+            // ...
+        });
+    </script>
 </body>
 </html>

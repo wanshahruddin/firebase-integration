@@ -14,6 +14,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * Handle FCM requests.
+ */
+Route::group(['prefix' => 'fcm'], function () {
+    // Update fcm token.
+    Route::post('/store', function (Request $request) {
+        $user = App\User::findOrFail($request['userId']);
+        $user->fcm_token = $request['fcmToken'];
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+        ]);
+    })->name('api.fcm.store');
+});
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+/**
+ * FCM test endpoint.
+ */
+Route::post('/notify', 'NotificationController@notify');
