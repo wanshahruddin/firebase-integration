@@ -35,6 +35,7 @@ const app = new Vue({
 /**
  * Firebase Cloud Messaging.
  */
+
 // Give the service worker access to Firebase Messaging.
 // Note that you can only use Firebase Messaging here, other Firebase libraries
 // are not available in the service worker.
@@ -55,3 +56,12 @@ firebase.initializeApp({
     appId: "1:142879333032:web:b2d4e680f98341d73e409d",
     measurementId: "G-PMN4RSNSZ6"
 });
+
+// Firebase token handler js.
+require('./fcm/token-handler');
+
+// Firebase notification handler.
+// - Browser is in the foreground.
+// - For handler when the browser is not in the
+// foreground, see firebase-messaging-sw.js.
+require('./fcm/message-handler');

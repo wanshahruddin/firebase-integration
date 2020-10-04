@@ -27,8 +27,11 @@ firebase.initializeApp({
 // Retrieve Firebase Messaging object.
 const messaging = firebase.messaging();
 
+// Handle notifications when the browser is not in
+// the foreground.
 messaging.setBackgroundMessageHandler(function (payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
+
     // Customize notification here
     const notificationTitle = 'Background Message Title';
     const notificationOptions = {

@@ -20,13 +20,16 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'fcm'], function () {
     // Update fcm token.
     Route::post('/store', function (Request $request) {
-        $user = App\User::findOrFail($request['userId']);
-        $user->fcm_token = $request['fcmToken'];
-        $user->save();
+        $user = App\User::findOrFail($request['userID']);
+
+        if ($user->fcm_token != $request['fcmToken']) {
+            $user->fcm_token = $request['fcmToken'];
+            $user->save();
+        }
 
         return response()->json([
             'success' => true,
-            'data' => $user,
+            'data' => [],
         ]);
     })->name('api.fcm.store');
 });
